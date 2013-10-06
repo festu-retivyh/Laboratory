@@ -1,0 +1,443 @@
+namespace Lalba_First
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Student a = new Student();
+            Console.WriteLine(a.ToShortString());
+            Console.ReadLine();
+            a.Name = "Артем";
+            a.Family = "Сухоруков";
+            a.Date = new DateTime(1993, 09, 28);
+            Console.WriteLine(a.ToString());
+            Console.ReadLine(); 
+            Exam exam = new Exam("Физика", 5, new DateTime(2013, 09, 12));
+            Exam exam1 = new Exam("История", 3, new DateTime(2013, 09, 10));
+            a.AddExams(exam);
+            a.AddExams(exam1);
+            Test Test = new Test("Математика", true);
+            Test Test1 = new Test("Философия", true);
+            a.AddTests(Test);
+            a.AddTests(Test1);
+            Console.WriteLine(a.ToString());
+            Person p = new Person();
+            Person p1 = new Person();
+            p.Name = "Иван";
+            p.Family = "Иванов";
+            p.Date = new DateTime(1993, 01, 01);
+            p1.Name = "Иван";
+            p1.Family = "Иванов";
+            p1.Date = new DateTime(1993, 01, 01);
+            Console.WriteLine();
+            Console.WriteLine("Равенство ссылок: " + ReferenceEquals((object)p, (object)p1));
+            if (p == p1)
+                Console.WriteLine("Объекты равны");
+            else Console.WriteLine("Объекты не равны");
+            Console.WriteLine("хэш-код первого объекта " + p.GetHashCode() + "   хэш-код второго объекта " + p1.GetHashCode());
+            Console.WriteLine("Создали студента со списком экзаменов");
+            Student a1 = new Student();
+            a1.Name = "Игорь";
+            a1.Family = "Сачко";
+            a1.Date = new DateTime(1994, 06, 23);
+            a1.AddExams(new Exam("Физика", 3, new DateTime(2013, 09, 12)));
+            a1.AddExams(new Exam("История", 3, new DateTime(2013, 09, 10)));
+            a1.AddTests(new Test("Математика", false));
+            a1.AddTests(new Test("Философия", true));
+            Console.WriteLine(a1.ToString());
+            Console.WriteLine("Вывод свойств Person для студента");
+            Console.WriteLine(a1.P.ToString());
+            Console.WriteLine();
+            Console.WriteLine("Создаю копию студента:");
+            Console.WriteLine(a.DeepCopy());
+            Student b = (Student)a.DeepCopy();
+            Console.WriteLine("Изменяю данные");
+            a.Date = new DateTime(1993, 09, 08);
+            a.Name = "Гоша";
+            Console.WriteLine(a.ToString());
+            Console.WriteLine(b.ToString());
+            Console.ReadLine();
+            Exam[] allexam = new Exam[2];
+            allexam[0] = exam;
+            allexam[1] = exam1;
+            Console.WriteLine();
+            Console.WriteLine("Список экзаменов:");
+            foreach (Exam i in allexam)
+                Console.WriteLine(i.Predmet.ToString());
+            ArrayList allList = new ArrayList();
+            allList.Add(Test);
+            allList.Add(Test1);
+            Console.WriteLine();
+            Console.WriteLine("Список зачетов:");
+            foreach (Test i in allList)
+                Console.WriteLine(i.Predmet.ToString());
+            Console.WriteLine();
+            Console.WriteLine("Список экзаменов с оценкой выше 3:");
+            foreach (Exam i in allexam)
+                if (i.Value > 3)
+                    Console.WriteLine(i.Predmet.ToString());
+            Console.WriteLine("Введите номер группы:");
+            try
+            {
+                a.M = int.Parse(Console.ReadLine());
+            }
+            catch (Exception k)
+            {
+                Console.WriteLine(k.Message + "Неверно введен номер группы");
+            }
+            Console.ReadLine();
+        }
+    }
+enum Education
+    { Specialist, Вachelor, SecondEducation }
+    interface IDateAndCopy
+    {
+        object DeepCopy();
+
+        DateTime Date { get; set; }
+    }
+    class Person : IDateAndCopy
+    {
+        protected string name;
+        protected string family;
+        protected System.DateTime data;
+        public object DeepCopy()
+        {
+            Person a = new Person();
+            a.name = name;
+            a.family = family;
+            a.data = new DateTime(data.Year, data.Month, data.Day);
+            return (object)a;
+        }
+
+        public Person(string a, string b, DateTime n)
+        {
+            name = a;
+            family = b;
+            data = n;
+        }
+        public Person()
+        {
+            name = "Anton";
+            family = "Retivyh";
+            data = new DateTime(1993, 09, 07);
+        }
+        public string Name
+        {
+            get
+            { return name; }
+            set
+            { name = value; }
+
+        }
+        public string Family
+        {
+            get
+            { return family; }
+            set
+            { family = value; }
+        }
+        public DateTime Date
+        {
+            get
+            { return data; }
+            set
+            { data = value; }
+        }
+        public int MyDate
+        {
+            get
+            { return data.Year; }
+            set
+            { data = new DateTime(value, data.Month, data.Day); }
+        }
+        public override string ToString()
+        {
+            return name + " " + family + " " + data.ToString();
+        }
+        public virtual string ToShortString()
+        {
+            return family +" "+ name;
+        }
+        public override bool Equals(object obj)
+        {
+            Person p = obj as Person;
+            if (p.name == this.name)
+                if (p.data == this.data)
+                    if (p.family == this.family)
+                        return true;
+                    else return false;
+                else return false;
+            else return false;
+        }
+        public static bool operator ==(Person a, Person b)
+        {
+            return a.Equals(b);
+        }
+        public static bool operator !=(Person a, Person b)
+        {
+            return !(a.Equals(b));
+        }
+        public override int GetHashCode()
+        {
+            return name.GetHashCode() ^ family.GetHashCode() ^ data.GetHashCode();
+        }
+    }
+Education type;
+        int number;
+        ArrayList List = new ArrayList();
+        protected Exam[] e = new Exam[0];
+        public Student(Person c, Education a, int b)
+        {
+            type = a;
+            number = b;
+            name = c.Name;
+            family = c.Family;
+            data = c.Date;
+        }
+        public Student()
+        {
+            type = 0;
+            number = 130;
+            name = "Anton";
+            family = "Retivyh";
+            data = new DateTime(1993, 03, 05);
+        }
+        public Person P
+        {
+            get
+            {
+                Person f = new Person();
+                f.Name = name;
+                f.Family = family;
+                f.Date = new DateTime(data.Year, data.Month, data.Day);
+                return f;
+            }
+            set
+            {
+                Person f = new Person();
+                name = f.Name;
+                family = f.Family;
+                data = f.Date;
+            }
+        }
+        public override bool Equals(object obj)
+        {
+            Student p = obj as Student;
+            if (p.type == this.type)
+                if (p.number == this.number)
+                    if (p.List.Equals(this.List))
+                        if (p.e.Equals(this.e))
+                            return true;
+                        else return false;
+                    else return false;
+                else return false;
+            else return false;
+        }
+        public static bool operator ==(Student a, Student b)
+        {
+            return a.Equals(b);
+        }
+        public static bool operator !=(Student a, Student b)
+        {
+            return !(a.Equals(b));
+        }
+        public ArrayList List1
+        {
+            get
+            { return List; }
+            set
+            { List = value; }
+        }
+        public Exam[] E
+        {
+            get
+            { return e; }
+            set
+            { e = value; }
+        }
+        public double Ball
+        {
+            get
+            {
+
+                int sum = 0;
+                for (int i = 0; i < e.Length; i++)
+                    sum = sum + e[i].Value;
+                sum = sum / e.Length;
+                return sum;
+
+            }
+        }
+        public void AddExams(params Exam[] a)
+        {
+            Exam[] e1 = new Exam[e.Length + 1];
+            for (int i = 0; i < e.Length; i++)
+                e1[i] = e[i];
+            e1[e.Length] = a[0];
+            e = e1;
+        }
+        public void AddTests(params Test[] a)
+        {
+            List.Add(a[0]);
+        }
+        public override string ToString()
+        {
+            string t = "";
+            string l = "";
+            for (int i = 0; i < e.Length; i++)
+                t = t + e[i].ToString() + "   ";
+            for (int i = 0; i < List.Count; i++)
+                l = l + List[i].ToString() + "  ";
+            return family + " " + name + " " + data.ToString() + " " + type.ToString() + " " + number.ToString() + " " + " " + t + l;
+        }
+        public override int GetHashCode()
+        {
+            return number.GetHashCode() ^ type.GetHashCode() ^ Ball.GetHashCode();
+        }
+        new public object DeepCopy()
+        {
+            Student a = new Student();
+            a.name = name;
+            a.family = family;
+            a.data = new DateTime(data.Year, data.Month, data.Day);
+            a.type = type;
+            a.number = number;
+            for (int i = 0; i < List.Count; i++)
+            {
+                a.List.Add(((Test)List[i]).DeepCopy());
+            }
+            for (int i = 0; i < e.Length; i++)
+            {
+                a.AddExams((Exam)e[i].DeepCopy());
+            }
+            return (object)a;
+        }
+        public int M
+        {
+            get
+            { return number; }
+            set
+            {
+                if (value <= 100 || value >= 599)
+                    throw new System.Exception(" Ошибка! ");
+                else number = value;
+            }
+        }
+    }
+public string Predmet { get; set; }
+        public int Value { get; set; }
+        public DateTime DataExam { get; set; }
+        public Exam(string a, int b, DateTime d)
+        {
+            Predmet = a;
+            Value = b;
+            DataExam = d;
+        }
+        public Exam()
+        {
+            Predmet = "matem";
+            Value = 5;
+            DataExam = new DateTime(1993, 09, 07);
+        }
+
+        public override string ToString()
+        {
+            return Predmet + " " + Value.ToString() + " " + DataExam.ToString();
+        }
+        public DateTime Date
+        {
+            get
+            { return DataExam; }
+            set
+            { DataExam = value; }
+        }
+        public override bool Equals(object obj)
+        {
+            Exam p = obj as Exam;
+            if (p.Predmet == this.Predmet)
+                if (p.Value == this.Value)
+                    if (p.DataExam == this.DataExam)
+                        return true;
+                    else return false;
+                else return false;
+            else return false;
+        }
+        public static bool operator ==(Exam a, Exam b)
+        {
+            return a.Equals(b);
+
+        }
+        public static bool operator !=(Exam a, Exam b)
+        {
+            return !(a.Equals(b));
+
+        }
+        public object DeepCopy()
+        {
+            Exam a = new Exam();
+            a.Predmet = Predmet;
+            a.Value = Value;
+            a.DataExam = new DateTime(DataExam.Year, DataExam.Month, DataExam.Day);
+            return (object)a;
+        }
+        public override int GetHashCode()
+        {
+
+            return Predmet.GetHashCode() ^ Value.GetHashCode() ^ DataExam.GetHashCode();
+        }
+    }
+    class Test
+    {
+        public string Predmet { get; set; }
+        public bool Zachet { get; set; }
+        public Test(string a, bool d)
+        {
+            Predmet = a;
+            Zachet = d;
+
+        }
+        public Test()
+        {
+            Predmet = "matem";
+            Zachet = true;
+        }
+
+        public override string ToString()
+        {
+            return Predmet + " " + Zachet.ToString();
+        }
+        public override bool Equals(object obj)
+        {
+            Test p = obj as Test;
+            if (p.Predmet == this.Predmet)
+                if (p.Zachet == this.Zachet)
+
+                    return true;
+                else return false;
+            else return false;
+        }
+        public static bool operator ==(Test a, Test b)
+        {
+            return a.Equals(b);
+
+        }
+        public static bool operator !=(Test a, Test b)
+        {
+            return !(a.Equals(b));
+
+        }
+        public object DeepCopy()
+        {
+            Test a = new Test();
+            a.Predmet = Predmet;
+            a.Zachet = Zachet;
+            return (object)a;
+        }
+        public override int GetHashCode()
+        {
+
+            return Predmet.GetHashCode() ^ Zachet.GetHashCode();
+        }
+    }
+}
